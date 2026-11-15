@@ -13,3 +13,8 @@ wheels/
 .vscode/
 
 logs/
+
+# Secrets and local connection config (dbt profiles belong in ~/.dbt/)
+.env
+.env.*
+profiles.yml
