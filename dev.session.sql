@@ -1,0 +1,1 @@
+DESCRIBE raw.jobs.raw_job_postings;

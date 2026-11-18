@@ -1,0 +1,68 @@
+models:
+  - name: stg_job_postings
+    description: >
+      One row per posting per scrape day - a job re-scraped across
+      days keeps every row. Rows the scraper flagged as errors are removed,
+      as are postings with no job_id (about 0.9% of non-error rows), since
+      they can't join to skills or be tracked across scrape days.
+    columns:
+      - name: job_id
+        description: The scraper's posting id. Not unique here, because a re-scraped job appears once per scrape day.
+        data_tests:
+          - not_null
+
+      - name: job_title
+        description: Job title as shown on the posting.
+
+      - name: company_name
+        description: Hiring company's name, with leading and trailing whitespace trimmed.
+
+      - name: job_location
+        description: Location listed on the posting.
+
+      - name: job_via
+        description: Site the posting was found through (e.g. LinkedIn, Indeed), with the leading "via " removed.
+
+      - name: job_posted_at
+        description: When the job was posted, as reported in the listing (often relative, e.g. "3 days ago").
+
+      - name: job_salary
+        description: Salary text from the posting, if any.
+
+      - name: job_schedule_type
+        description: Employment type, e.g. Full-time, Part-time, Contractor.
+
+      - name: job_work_from_home
+        description: Whether the posting is flagged as remote / work from home.
+
+      - name: job_detected_extensions_raw
+        description: Raw detected-extensions payload from the scraper (tags like posted time, schedule, salary), left unparsed.
+
+      - name: search_time
+        description: Timestamp of the scrape that collected this row.
+
+      - name: search_date
+        description: Date of the scrape that collected this row. Together with job_id, identifies a row.
+
+      - name: search_term
+        description: Search query the scraper used to find this posting.
+
+      - name: search_location
+        description: Location the scraper searched in.
+
+  - name: stg_job_skills
+    description: >
+      One row per (job, skill) pair extracted from the postings.
+    columns:
+      - name: job_id
+        description: The scraper's posting id. Joins to stg_job_postings.job_id; repeats once per skill found in the posting.
+        data_tests:
+          - not_null
+
+      - name: skill_id
+        description: Id of the extracted skill. Repeats across every job that mentions the skill.
+        data_tests:
+          - not_null
+
+      - name: skill_keyword
+        description: Skill name as matched in the posting text, with leading and trailing whitespace trimmed.
